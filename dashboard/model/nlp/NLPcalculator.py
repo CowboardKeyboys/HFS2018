@@ -8,9 +8,10 @@ import os.path
 
 class NLPcalculator:
     def __init__(self, training_data):
-        #self.tfidf = TfidfVectorizer(min_df=5, max_df=75)
+        stopwords = list(set([t[:-1] for t in open("./data/swedishStopWords.txt").readlines()]))
+        #self.tfidf = TfidfVectorizer()
         self.training_data = training_data
-        self.tfidf = TfidfVectorizer()
+        self.tfidf = TfidfVectorizer(min_df=5, max_df=.75, stop_words=stopwords)
         self.clf = NearestNeighbors()
         self.setup_model()
 
