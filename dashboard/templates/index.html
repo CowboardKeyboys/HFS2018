@@ -30,7 +30,7 @@ function send_data(dataToSend) {
     var SendInfo= { "someVariable": dataToSend};
     console.log("Sending data");
     $.ajax({
-        type: 'post',
+        type: 'post',1
         url : "http://localhost:5000/send_data",
         data: JSON.stringify(SendInfo),
         contentType: "application/json; charset=utf-8",
