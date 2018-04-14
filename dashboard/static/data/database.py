@@ -13,7 +13,7 @@ class database:
 				
 	def get_job_from_id(self, id):
 		if id in self.data.keys():
-			return self.data[id]
+			return self.data[id].to_json()
 		else:
 			return ""
 			
@@ -37,7 +37,7 @@ class database:
 				
 				
 def test():
-	db = database("200.json")
+	db = database("500000.json")
 	#print db.get_job_from_id('0017-482230').to_json()
 	#print db.get_jobs_in_region('0883')
 	#print db.get_all_jobs()
