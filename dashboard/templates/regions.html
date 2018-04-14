@@ -11,10 +11,10 @@
 
 <ul class="regions_list">
   {% for region in regions %}
-  <li> <h2> Kommun {{ region.region_name}} </h2>
+  <li> <h2> Kommun {{ region.region_name}} comp:{{region.competitive_score}} work:{{region.working_score}} </h2>
   <ul>
     {% for posting in region.jobs %}
-    <li> Jobannons {{ posting }} </li>
+    <li> Jobannons {{ posting.desc }} </li>
   {% endfor %}
   </ul>
   </li>

@@ -2,11 +2,12 @@
 from flask import render_template, jsonify, request, Response, redirect, url_for
 from dashboard import app
 from dashboard.MunicipalWeighting import *
-
+import json
 # import models
 from dashboard.static.data.database import database
 db = database(source='dashboard/static/data/200.json')
-
+from dashboard.model.nlp.NLPcalculator import NLPcalculator
+nlp = NLPcalculator(db.get_training_data())
 #
 # Render views
 #
@@ -75,15 +76,27 @@ def jobs_by_region():
 @app.route('/match', methods=['POST', 'GET'])
 def match_with_listings():
     if request.method == 'POST':
-        #content = request.get_json()
+        #content = request.form
         # (ids, scores) = CALL HAMPUS(cv)
+        text = "hejsan pizza hamburgare rullstol."
+        result = nlp.match_text(text, 20)
+        print result
+        joktor = []
+        for id, score in zip(result["id"],result["score"]):
+            job = db.get_job_from_id(id)
+            obj = json.loads(job)
+            region_code = int(obj['region_code'])
+            description = obj['location_desc']
+            #print region_code
+            joktor.append({'region_code':region_code,'score': score, 'desc':description })
+        print joktor
         # regions = CALL JOCKTOR(scored_stuffs)
         data0 = {'region_code': 1440, 'score': 0.1}
         data1 = {'region_code': 1440, 'score': 0.3}
         data2 = {'region_code': 1440, 'score': 0.2}
         data3 = {'region_code': 1489, 'score': 0.4}
         our_list=[data0, data1,data2,data3]
-        municipals = get_region_score(our_list)
+        municipals = get_region_score(joktor)
 #        municipals = [{'id':'0', 'name':'South', 'postings': ['0017-653836', '0017-653837']},{'id':'1', 'name':'West', 'postings': ['0017-653842', '0017-653844', '0017-571999', '0017-544195']},{'id':'2', 'name':'East', 'postings': ['0017-681758', '0017-681782']},{'id':'3', 'name':'North', 'postings': ['0017-681757']}]
         data = {'municipals': municipals}
         return render_template('regions.html', title='Results', regions=data['municipals'])

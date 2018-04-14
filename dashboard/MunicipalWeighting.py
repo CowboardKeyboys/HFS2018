@@ -54,7 +54,7 @@ def get_region_score(work_objects):
     municipals = []
 
     # Extract unique regions name from our work list
-    unique_regions = {obj['region_code'] for obj in work_objects}
+    unique_regions = {int(obj['region_code']) for obj in work_objects}
     groups = defaultdict(list)
 
     for obj in work_objects:
