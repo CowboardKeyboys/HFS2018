@@ -11,6 +11,16 @@ class job_listing:
 		self.title = s["PLATSRUBRIK"]
 		self.region_code = s["KOMMUN_KOD"]
 		self.job_id = s["YRKE_ID"]
+		self.duration = s["VARAKTIGHET"]
+		self.working_hours = s["ARBETSTID"]
+		self.working_operation = s["ARBETSDRIFT"]
+		self.employer_name = s["AG_NAMN"]
+		self.country = s["ADRESSLAND"]
+		self.location = s["POSTORT"]
+		self.location_desc = s["PLATSBESKRIVNING"]
+		self.working_operation_desc = s["BESKR_ARBETSDRIFT"]
+		self.access = s["TILLTRADE"]
+		
 
 		
 	def to_json(self):
