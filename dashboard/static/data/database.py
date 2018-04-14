@@ -1,4 +1,5 @@
 import json
+import time
 from job_listing import job_listing
 
 class database:
@@ -15,6 +16,13 @@ class database:
 			return self.data[id]
 		else:
 			return ""
+			
+	def get_jobs_from_ids(self, id_list):
+		result = []
+		for id in id_list:
+			result.append(self.data[id])
+		return json.dumps([jl.__dict__ for jl in result])
+			
 		
 	def get_jobs_in_region(self, region_code):
 		return json.dumps([jl.__dict__ for jl in self.data.values() if jl.region_code == region_code])
@@ -32,7 +40,10 @@ def test():
 	db = database("200.json")
 	#print db.get_job_from_id('0017-482230').to_json()
 	#print db.get_jobs_in_region('0883')
-	print db.get_all_jobs()
+	#print db.get_all_jobs()
+	print db.get_jobs_from_ids(["0017-544186", "0017-627299", "0017-667999"])
+	#print "data loaded."
+	#time.sleep(20000)
 	
 	
 if __name__ == "__main__":
