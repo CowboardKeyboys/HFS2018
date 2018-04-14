@@ -1,15 +1,15 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
-from tqdm import tqdm
+#from tqdm import tqdm
 import pickle
 import json
 import logging
 import os.path
 
-
 class NLPcalculator:
-    def __init__(self):
+    def __init__(self, training_data):
         #self.tfidf = TfidfVectorizer(min_df=5, max_df=75)
+        self.training_data = training_data
         self.tfidf = TfidfVectorizer()
         self.clf = NearestNeighbors()
         self.setup_model()
@@ -21,7 +21,7 @@ class NLPcalculator:
     def setup_model(self):
         if not os.path.exists("./jobListings.pickle"):
             print("No previous data found - setting up model")
-            jobs, ids = get_jobs()
+            jobs, ids = self.training_data
             self.ids = ids
             self.jobs = jobs
             pickle.dump(jobs, open("./jobListings.pickle", "w"), protocol=2)
@@ -77,6 +77,7 @@ class NLPcalculator:
     # Main method; returns
     #
     def match_text(self, text_input, return_count):
+        self.setup_model()
         inp_bow = self.tfidf.transform([text_input])
         ans = self.clf.kneighbors(inp_bow, n_neighbors=return_count)
         res = {"id": [self.match_id_with_custom_id(t) for t in ans[1][0]],
@@ -86,14 +87,14 @@ class NLPcalculator:
 #
 # Mocking function - get jobDescr. and IDs (All vital docs)
 #
-def get_jobs():
-    txt = ["test sadasd sad", "inget spec", "asd asas dsa dsasd", "asd ada sad a sda", "seconde"]
-    ids = [1231, 12312, 122]
-    return txt, ids
+#def get_jobs():#
+#    txt = ["test sadasd sad", "inget spec", "asd asas dsa dsasd", "asd ada sad a sda", "seconde"]
+#    ids = [1231, 12312, 122]
+#    return txt, ids
 
 #
 # Test-run
 #
-tmp = NLPcalculator()
-res = tmp.match_text("jag vill jobba med djur och hastar. kanske hovslagare.", 2)
-print res
+#tmp = NLPcalculator()
+#res = tmp.match_text("jag vill jobba med djur och hastar. kanske hovslagare.", 2)
+#print(res)
