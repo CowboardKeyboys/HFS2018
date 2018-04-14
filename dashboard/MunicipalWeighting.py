@@ -4,6 +4,23 @@ import csv
 from collections import defaultdict
 
 
+def normalize_dictionary(working_dictionary):
+
+    factor = 1.0/sum(working_dictionary.itervalues())
+
+    for k in working_dictionary:
+        working_dictionary[k]=working_dictionary[k]*factor
+
+    return working_dictionary
+
+def get_work_score(region_list):
+
+    region_ws_dict = {}
+    for region in region_list:
+        region_ws_dict.update({region[0].region_code: sum(r.score for r in region)})
+    return region_ws_dict
+
+
 def calculate_competition_weight(population, unemployment_rate):
     profession_count = 12.0
     return round((population * (unemployment_rate/100.0)) / profession_count)
@@ -29,7 +46,7 @@ def get_region_score(work_objects):
     region_population_score = {}
 
     # Get population score for each region
-    for str(region) in unique_regions:
+    for region in unique_regions:
         region_population_score.update({region: calculate_competition_weight(population[region], unemployment[region])})
 
 
