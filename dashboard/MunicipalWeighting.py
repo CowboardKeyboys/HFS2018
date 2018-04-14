@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import math
 import csv
 from collections import defaultdict
 from Municipal import Municipal
@@ -24,11 +25,18 @@ def normalize_dictionary(working_dictionary):
 
     return working_dictionary
 
-def get_work_score(region_list):
 
+def get_work_score(region_list):
     region_ws_dict = {}
     for region in region_list:
-        region_ws_dict.update({region[0]['region_code']: sum(r['score'] for r in region)})
+        total_work_score = [r['score'] for r in region]
+        total_work_score = np.mean(total_work_score)
+        weight = math.log(len(region), 2)
+        if weight > 0:
+            weighted_work_score = total_work_score * weight
+        else:
+            weighted_work_score = total_work_score
+        region_ws_dict.update({region[0]['region_code']: weighted_work_score})
     return region_ws_dict
 
 
@@ -71,13 +79,12 @@ def get_region_score(work_objects):
         region_population_score.update({region: calculate_competition_weight(pop, ump, n_jobs)})
 
     region_population_score = normalize_dictionary(region_population_score)
-    if verbose: print(region_population_score)
-
     region_population_score_inverted = invert_score(region_population_score)
     if verbose: print(region_population_score_inverted)
 
     region_work_score = get_work_score(work_regional_list)
-    if verbose: print(work_regional_list)
+    region_work_score_norm = normalize_dictionary(region_work_score)
+    if verbose: print(region_work_score_norm)
 
     kommunkoder_reversed = dict(zip(kommunkoder.values(), kommunkoder.keys()))
     for region in unique_regions:
@@ -85,7 +92,7 @@ def get_region_score(work_objects):
         municipal.region_id = region
         municipal.region_name = kommunkoder_reversed[region]
         municipal.competitive_score = region_population_score_inverted[region]
-        municipal.working_score = region_work_score[region]
+        municipal.working_score = region_work_score_norm[region]
         municipal.jobs = get_jobs_from_region(work_regional_list, region)
         municipals.append(municipal)
 
@@ -146,11 +153,12 @@ def test_data():
 	Alingsas
     '''
 
-    data1 = {'region_code': 1440, 'score':0.3}
-    data2 = {'region_code': 1440, 'score':0.2}
-    data3 = {'region_code': 1489, 'score':0.5}
+    data0 = {'region_code': 1440, 'score': 0.1}
+    data1 = {'region_code': 1440, 'score': 0.3}
+    data2 = {'region_code': 1440, 'score': 0.2}
+    data3 = {'region_code': 1489, 'score': 0.4}
 
-    our_list=[data1,data2,data3]
+    our_list=[data0, data1,data2,data3]
     get_region_score(our_list)
 def main():
     #kommunkoder = read_kommunkoder('kommunkoder.csv')
