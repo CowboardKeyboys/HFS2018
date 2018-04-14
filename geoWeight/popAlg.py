@@ -7,6 +7,7 @@ def calculateCompetitionWeight(population, unemployment_rate):
 
 
 def normalize_dictionary(working_dictionary):
+
     factor = 1.0/sum(working_dictionary.itervalues())
 
     for k in working_dictionary:
@@ -18,7 +19,7 @@ def get_work_score(region_list):
 
     region_ws_dict = {}
     for region in region_list:
-        region_ws_dict.update({region[0].id:sum(r.score for r in region)})
+        region_ws_dict.update({region[0].region_code:sum(r.score for r in region)})
 
             
 
