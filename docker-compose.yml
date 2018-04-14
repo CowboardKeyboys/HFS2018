@@ -1,0 +1,17 @@
+version: '3.3'
+
+
+services:
+  flaskapi:
+    build: ./services/flask/
+    ports:
+      - "80:8080"
+  frontend:
+    build: ./services/frontend/
+    volumes:
+      - './services/frontend:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=development
