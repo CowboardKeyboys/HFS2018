@@ -9,7 +9,8 @@ import os.path
 
 class NLPcalculator:
     def __init__(self):
-        self.tfidf = TfidfVectorizer(min_df=5, max_df=75)
+        #self.tfidf = TfidfVectorizer(min_df=5, max_df=75)
+        self.tfidf = TfidfVectorizer()
         self.clf = NearestNeighbors()
         self.setup_model()
 
@@ -23,6 +24,9 @@ class NLPcalculator:
             jobs, ids = get_jobs()
             self.ids = ids
             self.jobs = jobs
+            pickle.dump(jobs, open("./jobListings.pickle", "w"), protocol=2)
+            pickle.dump(ids, open("./jobListingsIds.pickle", "w"), protocol=2)
+
         else:
             print("Pre-trained model found - accessing content and IDs")
             self.jobs = pickle.load(open("./jobListings.pickle", "r"))
@@ -30,15 +34,16 @@ class NLPcalculator:
 
         if not os.path.exists("./tfidfVectorizer.pickle"):
             print("No previous Tf-Idf model found - setting up matrix")
-            inp_bow = self.train_vector_model(self.jobs)
+            self.inp_bow = self.train_vector_model(self.jobs)
+            pickle.dump(self.inp_bow, open("./bow.pickle", "w"), protocol=2)
         else:
             print("Pre-trained Tf-Idf model found - accessing matrix")
             self.tfidf = pickle.load(open("./tfidfVectorizer.pickle", "r"))
-            inp_bow = self.tfidf.transform(self.jobs)
+            self.inp_bow = pickle.load(open("./bow.pickle", "r"))
 
         if not os.path.exists("./nearestNeighbor.pickle"):
             print("No previous NN-Algorithm found - training model")
-            self.train_nearest_neighbor(inp_bow)
+            self.train_nearest_neighbor(self.inp_bow)
         else:
             print("NN-Algorithm found - setting up model")
             self.clf = pickle.load(open("./nearestNeighbor.pickle", "r"))
@@ -79,16 +84,16 @@ class NLPcalculator:
         return res
 
 #
-# Mocking function - get jobDescr. and IDs
+# Mocking function - get jobDescr. and IDs (All vital docs)
 #
-#def get_jobs():
-#    txt = ["test sadasd sad", "inget spec", "asd asas dsa dsasd", "asd ada sad a sda", "seconde"]
-#    ids = [1231, 12312, 122]
-#    return txt, ids
+def get_jobs():
+    txt = ["test sadasd sad", "inget spec", "asd asas dsa dsasd", "asd ada sad a sda", "seconde"]
+    ids = [1231, 12312, 122]
+    return txt, ids
 
 #
 # Test-run
 #
-#tmp = NLPcalculator()
-#res = tmp.match_text("jag vill jobba med djur och hastar. kanske hovslagare.", 2)
-#print res
+tmp = NLPcalculator()
+res = tmp.match_text("jag vill jobba med djur och hastar. kanske hovslagare.", 2)
+print res
