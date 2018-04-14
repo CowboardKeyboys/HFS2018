@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, request, Response
+from flask import render_template, jsonify, request, Response, redirect, url_for
 from dashboard import app
 
 # import models
@@ -69,3 +69,20 @@ def jobs_by_region():
     jobs = db.get_jobs_in_region(region_code=region)
     response = Response(jobs,status=200)
     return response
+
+@app.route('/match', methods=['POST'])
+def match_with_listings():
+    content = request.get_json()
+    print content
+    ## cv = content['curriculum'] #
+    # (ids, scores) = CALL HAMPUS(cv)
+    # regions = CALL JOCKTOR(scored_stuffs)
+    regions = {'regions': []}
+    return redirect('/results')
+
+
+@app.route('/results', methods=['GET','POST'])
+def present_results():
+    #content = request.get_json()
+    regions = [{'id':'0', 'name':'South', 'postings': ['0017-653836', '0017-653837']},{'id':'1', 'name':'West', 'postings': ['0017-653842', '0017-653844', '0017-571999', '0017-544195']},{'id':'2', 'name':'East', 'postings': ['0017-681758', '0017-681782']},{'id':'3', 'name':'North', 'postings': ['0017-681757']}]
+    return render_template('regions.html', title='Results', regions=regions)

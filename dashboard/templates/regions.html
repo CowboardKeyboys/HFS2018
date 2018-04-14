@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{title}}</title>
+</head>
+<body>
+<a href="/">START</a>
+<h1>{{title}}</h1>
+<h2>Here are the regions recommended for you:</h2>
+
+<ul class="regions_list">
+  {% for region in regions %}
+  <li> <h2> region {{ region.name }} </h2>
+  <ul>
+    {% for posting in region.postings %}
+    <li> job {{ posting }} </li>
+  {% endfor %}
+  </ul>
+  </li>
+    {% endfor %}
+</ul>
+</body>
+</html>

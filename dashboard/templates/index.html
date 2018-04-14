@@ -5,44 +5,7 @@
 </head>
 <body>
 
-<h2>Testing Flask + Jquery</h2>
-<h3 id="id1">[return value]]</h2>
-<h3 id="idResp">[return value]]</h2>
-
+<h1>{{title}}</h1>
+<a href="/register">I want to register my CV.</a>
 </body>
-
-<script>
-console.log("start")
-
-function createButton(name) {
-    var btn = document.createElement('button');
-    btn.setAttribute('id', name);
-    btn.innerHTML = name;
-    document.body.appendChild(btn);
-
-    btn.addEventListener("click", function(e){
-        send_data(name);
-    });
-}
-
-
-function send_data(dataToSend) {
-    var SendInfo= { "someVariable": dataToSend};
-    console.log("Sending data");
-    $.ajax({
-        type: 'post',1
-        url : "http://localhost:5000/send_data",
-        data: JSON.stringify(SendInfo),
-        contentType: "application/json; charset=utf-8",
-        success: function (data) {
-            document.getElementById("id1").innerHTML = "Data sent";
-            document.getElementById("idResp").innerHTML = data["someVariable"];
-            console.log(data)
-        }
-    });
-}
-
-send_data("none")
-
-</script>
 </html>
