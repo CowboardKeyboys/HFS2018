@@ -82,6 +82,7 @@ def get_region_score(work_objects):
 
     region_population_score = normalize_dictionary(region_population_score)
     region_population_score_inverted = invert_score(region_population_score)
+    region_population_score_inverted = normalize_dictionary(region_population_score_inverted)
     if verbose: print(region_population_score_inverted)
 
     region_work_score = get_work_score(work_regional_list)
