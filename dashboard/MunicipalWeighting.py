@@ -6,7 +6,7 @@ from collections import defaultdict
 from dashboard.Municipal import Municipal
 import os
 
-verbose = False
+verbose = True
 
 
 def invert_score(working_dictionary):
@@ -81,8 +81,9 @@ def get_region_score(work_objects):
         region_population_score.update({region: calculate_competition_weight(pop, ump, n_jobs)})
 
     region_population_score = normalize_dictionary(region_population_score)
-    region_population_score_inverted = invert_score(region_population_score)
-    if verbose: print(region_population_score_inverted)
+    region_population_score = invert_score(region_population_score)
+    region_population_score = normalize_dictionary(region_population_score)
+    if verbose: print(region_population_score)
 
     region_work_score = get_work_score(work_regional_list)
     region_work_score_norm = normalize_dictionary(region_work_score)
@@ -93,7 +94,7 @@ def get_region_score(work_objects):
         municipal = Municipal()
         municipal.region_id = region
         municipal.region_name = kommunkoder_reversed[region]
-        municipal.competitive_score = region_population_score_inverted[region]
+        municipal.competitive_score = region_population_score[region]
         municipal.working_score = region_work_score_norm[region]
         municipal.jobs = get_jobs_from_region(work_regional_list, region)
         municipals.append(municipal)
@@ -159,8 +160,9 @@ def test_data():
     data1 = {'region_code': 1440, 'score': 0.3}
     data2 = {'region_code': 1440, 'score': 0.2}
     data3 = {'region_code': 1489, 'score': 0.4}
+    data4 = {'region_code': 180, 'score': 0.8}
 
-    our_list=[data0, data1,data2,data3]
+    our_list=[data0, data1,data2,data3, data4]
     get_region_score(our_list)
 def main():
     #kommunkoder = read_kommunkoder('kommunkoder.csv')
