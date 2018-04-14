@@ -29,15 +29,15 @@ def calculate_competition_weight(population, unemployment_rate):
 def get_region_score(work_objects):
 
     # Extract unique regions name from our work list
-    unique_regions = {obj.region_code for obj in work_objects}
+    unique_regions = {obj['region_code'] for obj in work_objects}
     groups = defaultdict(list)
 
     for obj in work_objects:
-        groups[obj.region_code].append(obj)
+        groups[obj['region_code']].append(obj)
 
     # Get 2D list with job for each regions in seperate lists
     work_regional_list = groups.values()
-
+    print work_regional_list
     # Get dictionaries for population, unemploment rate
     kommunkoder = read_kommunkoder('kommunkoder.csv')
     population = read_population('befolkning_kommuner.csv')
@@ -47,9 +47,11 @@ def get_region_score(work_objects):
 
     # Get population score for each region
     for region in unique_regions:
-        region_population_score.update({region: calculate_competition_weight(population[region], unemployment[region])})
+        pop = population[region]
+        ump = unemployment[region]
+        region_population_score.update({region: calculate_competition_weight(pop, ump)})
 
-
+    print region_population_score
 def read_kommunkoder(csv_path):
     kommunkoder = {}
     with open(csv_path, 'rt') as csv_file:
@@ -94,11 +96,27 @@ def regions_to_codes(kommunkoder, regions):
             print('could not find ', region)
     return regions_converted
 
+def test_data():
+    '''
+     region_code:
+     score:
+
+	ALE
+	Alingsas
+    '''
+
+    data1 = {'region_code':'1440', 'score':0.3}
+    data2 = {'region_code':'1440', 'score':0.2}
+    data3 = {'region_code':'1489', 'score':0.5}
+
+    our_list=[data1,data2,data3]
+    get_region_score(our_list)
 def main():
-    kommunkoder = read_kommunkoder('kommunkoder.csv')
-    population = read_population('befolkning_kommuner.csv')
-    unemployment = read_unemployment('arbetsloshet_kommuner.csv')
-    unemployment = regions_to_codes(kommunkoder, unemployment)
+    #kommunkoder = read_kommunkoder('kommunkoder.csv')
+    #population = read_population('befolkning_kommuner.csv')
+    #unemployment = read_unemployment('aretsloshet_kommuner.csv')
+    #unemployment = regions_to_codes(kommunkoder, unemployment)
+    test_data()
     print('done')
 
 if __name__ == "__main__":
