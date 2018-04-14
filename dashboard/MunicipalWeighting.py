@@ -2,14 +2,25 @@ import numpy as np
 import pandas as pd
 import csv
 from collections import defaultdict
+from Municipal import Municipal
+
+
+verbose = False
+
+
+def invert_score(working_dictionary):
+    for k in working_dictionary:
+        working_dictionary[k] = 1 - working_dictionary[k]
+
+    return working_dictionary
 
 
 def normalize_dictionary(working_dictionary):
 
-    factor = 1.0/sum(working_dictionary.itervalues())
+    factor = 1.0/sum(working_dictionary.values())
 
     for k in working_dictionary:
-        working_dictionary[k]=working_dictionary[k]*factor
+        working_dictionary[k] = working_dictionary[k]*factor
 
     return working_dictionary
 
@@ -17,16 +28,22 @@ def get_work_score(region_list):
 
     region_ws_dict = {}
     for region in region_list:
-        region_ws_dict.update({region[0].region_code: sum(r.score for r in region)})
+        region_ws_dict.update({region[0]['region_code']: sum(r['score'] for r in region)})
     return region_ws_dict
 
 
-def calculate_competition_weight(population, unemployment_rate):
-    profession_count = 12.0
-    return round((population * (unemployment_rate/100.0)) / profession_count)
+def calculate_competition_weight(population, unemployment_rate, n_jobs):
+    return round((population * (unemployment_rate/100.0)) / n_jobs)
+
+
+def get_jobs_from_region(regions, region_id):
+    for region in regions:
+        if region[0]['region_code'] == region_id:
+            return region
 
 
 def get_region_score(work_objects):
+    municipals = []
 
     # Extract unique regions name from our work list
     unique_regions = {obj['region_code'] for obj in work_objects}
@@ -37,7 +54,7 @@ def get_region_score(work_objects):
 
     # Get 2D list with job for each regions in seperate lists
     work_regional_list = groups.values()
-    print work_regional_list
+    if verbose: print(work_regional_list)
     # Get dictionaries for population, unemploment rate
     kommunkoder = read_kommunkoder('kommunkoder.csv')
     population = read_population('befolkning_kommuner.csv')
@@ -49,9 +66,33 @@ def get_region_score(work_objects):
     for region in unique_regions:
         pop = population[region]
         ump = unemployment[region]
-        region_population_score.update({region: calculate_competition_weight(pop, ump)})
 
-    print region_population_score
+        n_jobs = len(get_jobs_from_region(work_regional_list, region))
+        region_population_score.update({region: calculate_competition_weight(pop, ump, n_jobs)})
+
+    region_population_score = normalize_dictionary(region_population_score)
+    if verbose: print(region_population_score)
+
+    region_population_score_inverted = invert_score(region_population_score)
+    if verbose: print(region_population_score_inverted)
+
+    region_work_score = get_work_score(work_regional_list)
+    if verbose: print(work_regional_list)
+
+    kommunkoder_reversed = dict(zip(kommunkoder.values(), kommunkoder.keys()))
+    for region in unique_regions:
+        municipal = Municipal()
+        municipal.region_id = region
+        municipal.region_name = kommunkoder_reversed[region]
+        municipal.competitive_score = region_population_score_inverted[region]
+        municipal.working_score = region_work_score[region]
+        municipal.jobs = get_jobs_from_region(work_regional_list, region)
+        municipals.append(municipal)
+
+    if verbose: print(municipals)
+    return municipals
+
+
 def read_kommunkoder(csv_path):
     kommunkoder = {}
     with open(csv_path, 'rt') as csv_file:
@@ -70,10 +111,10 @@ def read_population(csv_path):
     region_current = ''
     for index, region in enumerate(regions):
         if not pd.isnull(regions[index]):
-            region_current = [s for s in str(region).split() if s.isdigit()][0]
+            region_current = [int(s) for s in str(region).split() if s.isdigit()][0]
             pop_sums[region_current] = int(pops[index])
         else:
-            if str(region_current) in pop_sums:
+            if region_current in pop_sums:
                 pop_sums[region_current] += int(pops[index])
     return pop_sums
 
@@ -93,7 +134,7 @@ def regions_to_codes(kommunkoder, regions):
             code = kommunkoder[region]
             regions_converted[code] = regions[region]
         else:
-            print('could not find ', region)
+            if verbose: print('could not find ', region)
     return regions_converted
 
 def test_data():
@@ -105,9 +146,9 @@ def test_data():
 	Alingsas
     '''
 
-    data1 = {'region_code':'1440', 'score':0.3}
-    data2 = {'region_code':'1440', 'score':0.2}
-    data3 = {'region_code':'1489', 'score':0.5}
+    data1 = {'region_code': 1440, 'score':0.3}
+    data2 = {'region_code': 1440, 'score':0.2}
+    data3 = {'region_code': 1489, 'score':0.5}
 
     our_list=[data1,data2,data3]
     get_region_score(our_list)
@@ -117,7 +158,7 @@ def main():
     #unemployment = read_unemployment('aretsloshet_kommuner.csv')
     #unemployment = regions_to_codes(kommunkoder, unemployment)
     test_data()
-    print('done')
+    if verbose: print('done')
 
 if __name__ == "__main__":
     main()
