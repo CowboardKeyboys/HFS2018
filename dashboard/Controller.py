@@ -43,13 +43,11 @@ def get_score_from_text():
 # input: list of ids
 # output: list of jobs (objects)
 @app.route('/get_municipal_score')
-def get_municipal_score(text):
-    ans = nlpp(text)
-    objects = datamodel(ans)
-    anal = analysis(objects)
+def get_municipal_score():
     pass
 
 
+# Example response for a rest API/RESTful
 @app.route('/send_data', methods=['POST'])
 def send_data():
     content = request.get_json()
