@@ -20,9 +20,9 @@ class job_listing:
 		self.location_desc = s["PLATSBESKRIVNING"]
 		self.working_operation_desc = s["BESKR_ARBETSDRIFT"]
 		self.access = s["TILLTRADE"]
-		
 
-		
+
+
 	def to_json(self):
 		return json.dumps(self.__dict__)
 
@@ -33,9 +33,8 @@ class job_listing:
 def test():
 	j = job_listing('{"PLATSNUMMER": "0017-653836", "ANTAL_AKT_PLATSER": "1"}')
 	#j = job_listing("hej")
-	print j.to_json()
-	print "exit"
-	
+	print(j.to_json())
+	print("exit")
+
 if __name__ == "__main__":
 	test()
-	

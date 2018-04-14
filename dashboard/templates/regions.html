@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{{title}}</title>
+  <title>{{title}}</title
+  <meta charset="utf-8"></meta>
 </head>
 <body>
 <a href="/">START</a>
@@ -10,10 +11,10 @@
 
 <ul class="regions_list">
   {% for region in regions %}
-  <li> <h2> region {{ region.name }} </h2>
+  <li> <h2> Kommun {{ region.region_name}} </h2>
   <ul>
-    {% for posting in region.postings %}
-    <li> job {{ posting }} </li>
+    {% for posting in region.jobs %}
+    <li> Jobannons {{ posting }} </li>
   {% endfor %}
   </ul>
   </li>

@@ -1,5 +1,7 @@
+#-*-coding: utf-8-*-
 from flask import render_template, jsonify, request, Response, redirect, url_for
 from dashboard import app
+from dashboard.MunicipalWeighting import *
 
 # import models
 from dashboard.static.data.database import database
@@ -70,19 +72,20 @@ def jobs_by_region():
     response = Response(jobs,status=200)
     return response
 
-@app.route('/match', methods=['POST'])
+@app.route('/match', methods=['POST', 'GET'])
 def match_with_listings():
-    content = request.get_json()
-    print content
-    ## cv = content['curriculum'] #
-    # (ids, scores) = CALL HAMPUS(cv)
-    # regions = CALL JOCKTOR(scored_stuffs)
-    regions = {'regions': []}
-    return redirect('/results')
-
-
-@app.route('/results', methods=['GET','POST'])
-def present_results():
-    #content = request.get_json()
-    regions = [{'id':'0', 'name':'South', 'postings': ['0017-653836', '0017-653837']},{'id':'1', 'name':'West', 'postings': ['0017-653842', '0017-653844', '0017-571999', '0017-544195']},{'id':'2', 'name':'East', 'postings': ['0017-681758', '0017-681782']},{'id':'3', 'name':'North', 'postings': ['0017-681757']}]
-    return render_template('regions.html', title='Results', regions=regions)
+    if request.method == 'POST':
+        #content = request.get_json()
+        # (ids, scores) = CALL HAMPUS(cv)
+        # regions = CALL JOCKTOR(scored_stuffs)
+        data0 = {'region_code': 1440, 'score': 0.1}
+        data1 = {'region_code': 1440, 'score': 0.3}
+        data2 = {'region_code': 1440, 'score': 0.2}
+        data3 = {'region_code': 1489, 'score': 0.4}
+        our_list=[data0, data1,data2,data3]
+        municipals = get_region_score(our_list)
+#        municipals = [{'id':'0', 'name':'South', 'postings': ['0017-653836', '0017-653837']},{'id':'1', 'name':'West', 'postings': ['0017-653842', '0017-653844', '0017-571999', '0017-544195']},{'id':'2', 'name':'East', 'postings': ['0017-681758', '0017-681782']},{'id':'3', 'name':'North', 'postings': ['0017-681757']}]
+        data = {'municipals': municipals}
+        return render_template('regions.html', title='Results', regions=data['municipals'])
+    else:
+        return redirect('/')

@@ -3,8 +3,8 @@ import pandas as pd
 import math
 import csv
 from collections import defaultdict
-from Municipal import Municipal
-
+from dashboard.Municipal import Municipal
+import os
 
 verbose = False
 
@@ -64,9 +64,11 @@ def get_region_score(work_objects):
     work_regional_list = groups.values()
     if verbose: print(work_regional_list)
     # Get dictionaries for population, unemploment rate
-    kommunkoder = read_kommunkoder('kommunkoder.csv')
-    population = read_population('befolkning_kommuner.csv')
-    unemployment = read_unemployment('arbetsloshet_kommuner.csv')
+
+    path = os.path.dirname(__file__)
+    kommunkoder = read_kommunkoder(path + '/kommunkoder.csv')
+    population = read_population(path + '/befolkning_kommuner.csv')
+    unemployment = read_unemployment(path + '/arbetsloshet_kommuner.csv')
     unemployment = regions_to_codes(kommunkoder, unemployment)
     region_population_score = {}
 
