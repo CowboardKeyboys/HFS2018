@@ -37,9 +37,35 @@ def get_score_from_text():
 #
 # Communicate with data model and list job posting
 #
-@app.route('/job', methods=['POST'])
+@app.route('/job', methods=['POST', 'GET'])
 def job():
     content = request.get_json()
     id = content['job_id']
-    posting = db.get_job_from_id(id)
-    return Response(posting,status=200)
+    job = db.get_job_from_id(id)
+    #h = Headers()
+    #h.add('Access-Control-Allow-Origin','*')
+    response = Response(job,status=200)#, headers=h)
+    return response
+
+@app.route('/jobs', methods=['POST'])
+def jobs_by_id():
+    content = request.get_json()
+    ids = content['job_id']
+    jobs = db.get_job_from_id(ids)
+    response = Response(jobs,status=200)
+    return response
+
+# Returns all jobs in the databse.
+@app.route('/jobs', methods=['GET'])
+def jobs():
+    jobs = db.get_all_jobs().encode('utf8')
+    response = Response(jobs, status=200)
+    return response
+
+@app.route('/jobs/region', methods=['POST'])
+def jobs_by_region():
+    content = request.get_json()
+    region = content['region']
+    jobs = db.get_jobs_in_region(region_code=region)
+    response = Response(jobs,status=200)
+    return response
