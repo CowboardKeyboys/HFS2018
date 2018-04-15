@@ -5,5 +5,5 @@ Web application built on flask that takes takes written text and provides matchi
 
 ## HOWTO:
 
-Du måste köra 
-`pip install virtualenv &&ugit clone https://github.com/CowboardKeyboys/HFS2018.git && virtualenv ./HFS2018 && cd HFS2018 && source ./bin/activate && pip install -r requirements.txt && export FLASK_APP=main.py && export FLASK_DEBUG=1 && flask run`
+Du kan köra 
+`pip install virtualenv && git clone https://github.com/CowboardKeyboys/HFS2018.git && virtualenv ./HFS2018 && cd HFS2018 && source ./bin/activate && pip install -r requirements.txt && export FLASK_APP=main.py && export FLASK_DEBUG=1 && flask run`
