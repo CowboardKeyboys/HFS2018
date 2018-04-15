@@ -54,7 +54,8 @@ def get_region_score(work_objects):
     municipals = []
 
     # Extract unique regions name from our work list
-    unique_regions = {int(obj['region_code']) for obj in work_objects}
+    unique_regions = {int(obj['region_code']) for obj in work_objects if int(obj['region_code']) != 634 and int(obj['region_code']) != 305}
+    unique_regions = list(unique_regions)
     groups = defaultdict(list)
 
     for obj in work_objects:
@@ -73,9 +74,17 @@ def get_region_score(work_objects):
     region_population_score = {}
 
     # Get population score for each region
-    for region in unique_regions:
+    for idx,region in enumerate(unique_regions):
         pop = population[region]
-        ump = unemployment[region]
+        try:
+
+            ump = unemployment[region]
+        except Exception as e:
+            ump = 10
+            #region = 1489
+            #unique_regions[idx]=1489
+            #continue
+
 
         n_jobs = len(get_jobs_from_region(work_regional_list, region))
         region_population_score.update({region: calculate_competition_weight(pop, ump, n_jobs)})

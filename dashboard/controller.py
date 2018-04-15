@@ -5,7 +5,7 @@ from dashboard.MunicipalWeighting import *
 import json
 # import models
 from dashboard.static.data.database import database
-db = database(source='dashboard/static/data/2017.json')
+db = database(source='dashboard/static/data/10k.json')
 from dashboard.model.nlp.NLPcalculator import NLPcalculator
 nlp = NLPcalculator(db.get_training_data())
 #
@@ -76,17 +76,17 @@ def jobs_by_region():
 @app.route('/match', methods=['POST', 'GET'])
 def match_with_listings():
     if request.method == 'POST':
-        # TODO: AJAX text please!
-        text = "Foto och matlagning. önskar att få jobb i norrland."
-        result = nlp.match_text(text, 10)
-        print result
+        result = request.form
+        result = nlp.match_text(result['curriculum'], 10)
         joktor = []
         for id, score in zip(result["id"],result["score"]):
             job = db.get_job_from_id(id)
             obj = json.loads(job)
-            region_code = int(obj['region_code'])
+            try:
+                region_code = int(obj['region_code'])
+            except ValueError as e:
+                region_code = 1440
             description = obj['location_desc']
-            #print region_code
             joktor.append({'region_code':region_code,'score': score, 'desc':description, 'title': obj['title'] })
         municipals = get_region_score(joktor)
         data = {'municipals': municipals}
