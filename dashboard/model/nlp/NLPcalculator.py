@@ -1,4 +1,4 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.neighbors import NearestNeighbors
 #from tqdm import tqdm
 import pickle
@@ -8,10 +8,11 @@ import os.path
 
 class NLPcalculator:
     def __init__(self, training_data):
-        stopwords = list(set([t[:-1] for t in open("./data/swedishStopWords.txt").readlines()]))
+        stopwords = list(set([t[:-1] for t in open("./dashboard/model/nlp/swedishStopWords.txt").readlines()]))
+        #print stopwords
         #self.tfidf = TfidfVectorizer()
         self.training_data = training_data
-        self.tfidf = TfidfVectorizer(min_df=5, max_df=.75, stop_words=stopwords)
+        self.tfidf = TfidfVectorizer(stop_words=stopwords)
         self.clf = NearestNeighbors()
         self.setup_model()
 
@@ -23,6 +24,8 @@ class NLPcalculator:
         if not os.path.exists("./jobListings.pickle"):
             print("No previous data found - setting up model")
             jobs, ids = self.training_data
+            print(len(jobs))
+            print(len(ids))
             self.ids = ids
             self.jobs = jobs
             pickle.dump(jobs, open("./jobListings.pickle", "w"), protocol=2)

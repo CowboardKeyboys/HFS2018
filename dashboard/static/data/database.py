@@ -38,9 +38,9 @@ class database:
 		leftQ, rightQ = st.t.interval(0.99, len(a)-1, loc=np.mean(a), scale=st.sem(a))
 		median = np.median(a)
 		for line in self.data.values():
-			if len(line.location_desc)>leftQ and len(line.location_desc)<rightQ:
-				desc.append(line.location_desc)
-				id.append(line.id)
+			#if len(line.location_desc)>leftQ and len(line.location_desc)<rightQ:
+			desc.append(line.location_desc)
+			id.append(line.id)
 		return desc, id
 
 	def pr(self):
