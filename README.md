@@ -1,7 +1,8 @@
 # Who seeks shall find
 Web application built on flask that takes takes written text and provides matching joblistings and recommends an area in Sweden which to relocate based on number of jobs available and other metrics. This is achieved using natural language processing to match for job adds and weighing the fitness of jobs in an municipality to the number of available jobs.
  
-## Authors: Hampus Adamsson, Max Andersson, Daniel Eliassen, Christian Johansson, Joakim Nyman, Viktor Palerius.
+## Authors:
+Hampus Adamsson, Max Andersson, Daniel Eliassen, Christian Johansson, Joakim Nyman, Viktor Palerius.
 
 ## HOWTO:
 
