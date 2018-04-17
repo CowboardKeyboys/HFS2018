@@ -33,7 +33,7 @@ class NLPCalculator:
 
         if not os.path.exists("./tfidfVectorizer.pickle"):
             print("No previous Tf-Idf Models found - setting up matrix")
-            self.inp_bow = self.train_vector_model(self.training_data)
+            self.inp_bow = self.train_vector_model([obj.location_desc for obj in self.training_data])
             pickle.dump(self.tfidf, open("./tfidfVectorizer.pickle", "w"), protocol=2)
             pickle.dump(self.inp_bow, open("./bow.pickle", "w"), protocol=2)
         else:
