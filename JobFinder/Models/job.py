@@ -20,6 +20,7 @@ class Job:
 		self.location_desc = s["PLATSBESKRIVNING"]
 		self.working_operation_desc = s["BESKR_ARBETSDRIFT"]
 		self.access = s["TILLTRADE"]
+		self.score = None
 
 
 

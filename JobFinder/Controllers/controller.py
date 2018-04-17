@@ -8,7 +8,7 @@ from JobFinder.Models.database import Database
 from JobFinder.Models.nlp_calculator import NLPCalculator
 
 db = Database(source='JobFinder/Assets/200.json')
-nlp = NLPCalculator(db.get_training_data())
+nlp = NLPCalculator(db.get_jobs())
 #
 # Render views
 #
@@ -48,7 +48,7 @@ def job():
     job = db.get_job_from_id(id)
     #h = Headers()
     #h.add('Access-Control-Allow-Origin','*')
-    response = Response(job,status=200)#, headers=h)
+    response = Response(json.dumps(job),status=200)#, headers=h)
     return response
 
 @app.route('/jobs', methods=['POST'])
@@ -56,7 +56,7 @@ def jobs_by_id():
     content = request.get_json()
     ids = content['job_id']
     jobs = db.get_job_from_id(ids)
-    response = Response(jobs,status=200)
+    response = Response(json.dumps(jobs),status=200)
     return response
 
 # Returns all jobs in the databse.
@@ -71,7 +71,7 @@ def jobs_by_region():
     content = request.get_json()
     region = content['region']
     jobs = db.get_jobs_in_region(region_code=region)
-    response = Response(jobs, status=200)
+    response = Response(json.dumps(jobs), status=200)
     return response
 
 @app.route('/match', methods=['POST', 'GET'])
@@ -79,17 +79,7 @@ def match_with_listings():
     if request.method == 'POST':
         result = request.form
         result = nlp.match_text(result['curriculum'], 10)
-        joktor = []
-        for id, score in zip(result["id"],result["score"]):
-            job = db.get_job_from_id(id)
-            obj = json.loads(job)
-            try:
-                region_code = int(obj['region_code'])
-            except ValueError as e:
-                region_code = 1440
-            description = obj['location_desc']
-            joktor.append({'region_code':region_code,'score': score, 'desc':description, 'title': obj['title'] })
-        municipals = get_region_score(joktor)
+        municipals = get_region_score(result)
         data = {'municipals': municipals}
         return render_template('regions.html', title='Results', regions=data['municipals'])
     else:

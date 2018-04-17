@@ -11,7 +11,9 @@ class NLPCalculator:
         path = os.path.normpath(os.path.join(os.path.dirname(__file__),"../Assets/swedishStopWords.txt"))
         stopwords = list(set([t[:-1] for t in open(path).readlines()]))
         #print stopwords
-        self.training_data = training_data
+        self.training_data = training_data.values()
+        self.ids = training_data.keys()
+        #print(training_data)
         self.tfidf = TfidfVectorizer(stop_words=stopwords)
         self.clf = NearestNeighbors()
         self.setup_model()
@@ -21,24 +23,18 @@ class NLPCalculator:
     # Startup script - setting up Models
     #
     def setup_model(self):
-        if not os.path.exists("./jobListings.pickle"):
-            print("No previous data found - setting up Models")
-            jobs, ids = self.training_data
-            print(len(jobs))
-            print(len(ids))
-            self.ids = ids
-            self.jobs = jobs
-            pickle.dump(jobs, open("./jobListings.pickle", "w"), protocol=2)
-            pickle.dump(ids, open("./jobListingsIds.pickle", "w"), protocol=2)
-
-        else:
-            print("Pre-trained Models found - accessing content and IDs")
-            self.jobs = pickle.load(open("./jobListings.pickle", "r"))
-            self.ids = pickle.load(open("./jobListingsIds.pickle", "r"))
+        #  ---- Redundant --- db loads training data
+        # if not os.path.exists("./jobListings.pickle"):
+        #     print("No previous data found - setting up Models")
+        #     pickle.dump(self.training_data, open("./jobListings.pickle", "w"), protocol=2)
+        # else:
+        #     print("Pre-trained Models found - accessing content and IDs")
+        #     self.training_data = pickle.load(open("./jobListings.pickle", "r"))
 
         if not os.path.exists("./tfidfVectorizer.pickle"):
             print("No previous Tf-Idf Models found - setting up matrix")
-            self.inp_bow = self.train_vector_model(self.jobs)
+            self.inp_bow = self.train_vector_model(self.training_data)
+            pickle.dump(self.tfidf, open("./tfidfVectorizer.pickle", "w"), protocol=2)
             pickle.dump(self.inp_bow, open("./bow.pickle", "w"), protocol=2)
         else:
             print("Pre-trained Tf-Idf Models found - accessing matrix")
@@ -48,6 +44,7 @@ class NLPCalculator:
         if not os.path.exists("./nearestNeighbor.pickle"):
             print("No previous NN-Algorithm found - training Models")
             self.train_nearest_neighbor(self.inp_bow)
+            pickle.dump(self.clf, open("./nearestNeighbor.pickle", "w"), protocol=2)
         else:
             print("NN-Algorithm found - setting up Models")
             self.clf = pickle.load(open("./nearestNeighbor.pickle", "r"))
@@ -58,7 +55,6 @@ class NLPCalculator:
     def train_vector_model(self, jobs):
         logging.info("training Tf-Idf-vectorizer")
         inp_bow = self.tfidf.fit_transform(jobs)
-        pickle.dump(self.tfidf, open("./tfidfVectorizer.pickle", "w"), protocol=2)
         logging.info("tfidf - BOW shape")
         return inp_bow
 
@@ -68,14 +64,7 @@ class NLPCalculator:
     def train_nearest_neighbor(self, inp_bow):
         logging.info("training NN")
         self.clf.fit(inp_bow)
-        pickle.dump(self.clf, open("./nearestNeighbor.pickle", "w"), protocol=2)
         logging.info("Fit done")
-
-    #
-    # Matching IDS with the main database ID-list
-    #
-    def match_id_with_custom_id(self, id_inp):
-        return self.ids[id_inp]
 
     #
     # Main method; returns
@@ -84,8 +73,11 @@ class NLPCalculator:
         self.setup_model()
         inp_bow = self.tfidf.transform([text_input])
         ans = self.clf.kneighbors(inp_bow, n_neighbors=return_count)
-        res = {"id": [self.match_id_with_custom_id(t) for t in ans[1][0]],
-               "score": ans[0][0]}
+        res = []
+        for id, score in zip(ans[1][0],ans[0][0]):
+            if score > 0:
+                self.training_data[id].score = float(score)
+                res.append(self.training_data[id])
         return res
 
 
