@@ -1,6 +1,6 @@
 import json
 
-class job_listing:
+class Job:
 
 	def __init__(self, sourceData):
 		#self.id = sourceData
@@ -31,7 +31,7 @@ class job_listing:
 
 
 def test():
-	j = job_listing('{"PLATSNUMMER": "0017-653836", "ANTAL_AKT_PLATSER": "1"}')
+	j = JobListing('{"PLATSNUMMER": "0017-653836", "ANTAL_AKT_PLATSER": "1"}')
 	#j = job_listing("hej")
 	print(j.to_json())
 	print("exit")

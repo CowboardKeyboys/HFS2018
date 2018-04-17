@@ -1,13 +1,14 @@
 #-*-coding: utf-8-*-
-from flask import render_template, jsonify, request, Response, redirect, url_for
-from dashboard import app
-from dashboard.MunicipalWeighting import *
+from flask import render_template, jsonify, request, Response, redirect
+from JobFinder import app
+from JobFinder.Models.municipal_weighting import *
 import json
 # import models
-from dashboard.static.data.database import database
-db = database(source='dashboard/static/data/10k.json')
-from dashboard.model.nlp.NLPcalculator import NLPcalculator
-nlp = NLPcalculator(db.get_training_data())
+from JobFinder.Models.database import Database
+from JobFinder.Models.nlp_calculator import NLPCalculator
+
+db = Database(source='JobFinder/Assets/200.json')
+nlp = NLPCalculator(db.get_training_data())
 #
 # Render views
 #
@@ -38,7 +39,7 @@ def get_score_from_text():
 #
 
 #
-# Communicate with data model and list job posting
+# Communicate with data Models and list job posting
 #
 @app.route('/job', methods=['POST', 'GET'])
 def job():

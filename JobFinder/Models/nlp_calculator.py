@@ -1,16 +1,16 @@
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.neighbors import NearestNeighbors
-#from tqdm import tqdm
+
 import pickle
 import json
 import logging
 import os.path
 
-class NLPcalculator:
+class NLPCalculator:
     def __init__(self, training_data):
-        stopwords = list(set([t[:-1] for t in open("./dashboard/model/nlp/swedishStopWords.txt").readlines()]))
+        path = os.path.normpath(os.path.join(os.path.dirname(__file__),"../Assets/swedishStopWords.txt"))
+        stopwords = list(set([t[:-1] for t in open(path).readlines()]))
         #print stopwords
-        #self.tfidf = TfidfVectorizer()
         self.training_data = training_data
         self.tfidf = TfidfVectorizer(stop_words=stopwords)
         self.clf = NearestNeighbors()
@@ -18,11 +18,11 @@ class NLPcalculator:
 
     #
     # Constructor
-    # Startup script - setting up model
+    # Startup script - setting up Models
     #
     def setup_model(self):
         if not os.path.exists("./jobListings.pickle"):
-            print("No previous data found - setting up model")
+            print("No previous data found - setting up Models")
             jobs, ids = self.training_data
             print(len(jobs))
             print(len(ids))
@@ -32,24 +32,24 @@ class NLPcalculator:
             pickle.dump(ids, open("./jobListingsIds.pickle", "w"), protocol=2)
 
         else:
-            print("Pre-trained model found - accessing content and IDs")
+            print("Pre-trained Models found - accessing content and IDs")
             self.jobs = pickle.load(open("./jobListings.pickle", "r"))
             self.ids = pickle.load(open("./jobListingsIds.pickle", "r"))
 
         if not os.path.exists("./tfidfVectorizer.pickle"):
-            print("No previous Tf-Idf model found - setting up matrix")
+            print("No previous Tf-Idf Models found - setting up matrix")
             self.inp_bow = self.train_vector_model(self.jobs)
             pickle.dump(self.inp_bow, open("./bow.pickle", "w"), protocol=2)
         else:
-            print("Pre-trained Tf-Idf model found - accessing matrix")
+            print("Pre-trained Tf-Idf Models found - accessing matrix")
             self.tfidf = pickle.load(open("./tfidfVectorizer.pickle", "r"))
             self.inp_bow = pickle.load(open("./bow.pickle", "r"))
 
         if not os.path.exists("./nearestNeighbor.pickle"):
-            print("No previous NN-Algorithm found - training model")
+            print("No previous NN-Algorithm found - training Models")
             self.train_nearest_neighbor(self.inp_bow)
         else:
-            print("NN-Algorithm found - setting up model")
+            print("NN-Algorithm found - setting up Models")
             self.clf = pickle.load(open("./nearestNeighbor.pickle", "r"))
 
     #
@@ -88,13 +88,6 @@ class NLPcalculator:
                "score": ans[0][0]}
         return res
 
-#
-# Mocking function - get jobDescr. and IDs (All vital docs)
-#
-#def get_jobs():#
-#    txt = ["test sadasd sad", "inget spec", "asd asas dsa dsasd", "asd ada sad a sda", "seconde"]
-#    ids = [1231, 12312, 122]
-#    return txt, ids
 
 #
 # Test-run

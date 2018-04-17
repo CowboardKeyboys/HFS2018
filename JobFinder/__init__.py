@@ -1,3 +1,3 @@
 from flask import Flask
 app = Flask(__name__)
-from dashboard import controller
+from JobFinder.Controllers import controller

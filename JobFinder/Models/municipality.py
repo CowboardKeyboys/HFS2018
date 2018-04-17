@@ -1,7 +1,7 @@
 # This is our domain object - use this
 
 
-class Municipal:
+class Municipality:
     region_id = None
     region_name = None
     competitive_score = None

@@ -14,7 +14,7 @@
   <li> <h2> Kommun {{ region.region_name}} comp:{{region.competitive_score}} work:{{region.working_score}} </h2>
   <ul>
     {% for posting in region.jobs %}
-    <li><b>{{posting.title}}</b> {{ posting.desc }} </li>
+    <li><b>{{posting.title}}</b> <p>{{ posting.desc }}</p> </li>
   {% endfor %}
   </ul>
   </li>

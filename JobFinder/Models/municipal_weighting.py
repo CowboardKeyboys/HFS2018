@@ -3,7 +3,7 @@ import pandas as pd
 import math
 import csv
 from collections import defaultdict
-from dashboard.Municipal import Municipal
+from JobFinder.Models.municipality import Municipality
 import os
 
 verbose = True
@@ -66,7 +66,8 @@ def get_region_score(work_objects):
     if verbose: print(work_regional_list)
     # Get dictionaries for population, unemploment rate
 
-    path = os.path.dirname(__file__)
+
+    path = os.path.normpath(os.path.join(os.path.dirname(__file__), "../Assets/"))
     kommunkoder = read_kommunkoder(path + '/kommunkoder.csv')
     population = read_population(path + '/befolkning_kommuner.csv')
     unemployment = read_unemployment(path + '/arbetsloshet_kommuner.csv')
@@ -100,7 +101,7 @@ def get_region_score(work_objects):
 
     kommunkoder_reversed = dict(zip(kommunkoder.values(), kommunkoder.keys()))
     for region in unique_regions:
-        municipal = Municipal()
+        municipal = Municipality()
         municipal.region_id = region
         municipal.region_name = kommunkoder_reversed[region]
         municipal.competitive_score = region_population_score[region]

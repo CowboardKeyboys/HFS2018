@@ -1,1 +1,1 @@
-from dashboard import app
+from JobFinder import app

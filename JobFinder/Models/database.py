@@ -1,15 +1,14 @@
 import json
-import time
-from dashboard.static.data.job_listing import job_listing
+from JobFinder.Models.job import Job
 import numpy as np, scipy.stats as st
 
-class database:
+class Database:
 
 	def __init__(self, source):
 		self.data = dict()
 		with open(source, 'r') as f:
 			for line in f:
-				jl = job_listing(line)
+				jl = Job(line)
 				self.data[jl.id] = jl
 
 	def get_job_from_id(self, id):
